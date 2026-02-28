@@ -1,0 +1,115 @@
+/* React Flow 样式 */
+@import '@xyflow/react/dist/style.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 基础样式 */
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #0c4a6e;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* React Flow 自定义样式 */
+.react-flow__node {
+  @apply rounded-lg shadow-lg;
+}
+
+.react-flow__edge-path {
+  stroke-width: 2;
+}
+
+/* 动画类 */
+@layer utilities {
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-fade-in-out {
+    animation: fade-in-out 2.6s ease-in-out forwards;
+  }
+
+  .animate-float-in {
+    animation: float-in 2.6s ease-out forwards;
+  }
+}
+
+@keyframes glow {
+  from {
+    box-shadow:
+      0 0 5px theme('colors.primary.400'),
+      0 0 10px theme('colors.primary.400'),
+      0 0 15px theme('colors.primary.400');
+  }
+  to {
+    box-shadow:
+      0 0 10px theme('colors.accent.400'),
+      0 0 20px theme('colors.accent.400'),
+      0 0 30px theme('colors.accent.400');
+  }
+}
+
+@keyframes fade-in-out {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes float-in {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  16% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  82% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.99);
+  }
+}
