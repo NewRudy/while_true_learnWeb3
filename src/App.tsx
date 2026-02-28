@@ -6,17 +6,32 @@ import {
   GraduationPage,
   ChapterUnlockCelebration,
   ChapterQuickReviewModal,
+  LevelRunResultModal,
   type ChallengeRunPayload,
 } from './components';
 import {
   getAllLevelDefinitions,
   getChapterMetadata,
+  getNextLevel,
   isLastLevel,
   useLevelStore,
 } from './systems/level-system';
 import { useEconomyStore, useMotivationStore } from './systems';
 
 type AppScreen = 'landing' | 'map' | 'play' | 'graduation';
+
+type LevelRunModalState = {
+  open: boolean;
+  success: boolean;
+  levelName: string;
+  score: number;
+  reward: number;
+  profitLossPercent: number;
+  transactionCount: number;
+  nextLevelId: string | null;
+  nextLevelName: string | null;
+  finalLevel: boolean;
+};
 
 function App() {
   const [screen, setScreen] = useState<AppScreen>('landing');
@@ -26,6 +41,7 @@ function App() {
     chapterName: string;
   } | null>(null);
   const [quickReviewChapter, setQuickReviewChapter] = useState<number | null>(null);
+  const [runModal, setRunModal] = useState<LevelRunModalState | null>(null);
 
   const levelProgress = useLevelStore((state) => state.levelProgress);
   const unlockedChapters = useLevelStore((state) => state.unlockedChapters);
@@ -101,11 +117,51 @@ function App() {
     setScreen('map');
   };
 
-  const handleLevelFinished = ({ level, completionResult }: ChallengeRunPayload) => {
-    if (completionResult.success && isLastLevel(level.id)) {
-      setScreen('graduation');
-      setActiveLevelId(null);
-    }
+  const handleLevelFinished = ({
+    level,
+    completionResult,
+    simulationResult,
+  }: ChallengeRunPayload) => {
+    const nextLevel = getNextLevel(level.id);
+    const finalLevel = isLastLevel(level.id);
+
+    setRunModal({
+      open: true,
+      success: completionResult.success,
+      levelName: level.name,
+      score: completionResult.score,
+      reward: completionResult.reward,
+      profitLossPercent: simulationResult.profitLossPercent,
+      transactionCount: simulationResult.transactionCount,
+      nextLevelId: completionResult.success && nextLevel ? nextLevel.id : null,
+      nextLevelName:
+        completionResult.success && nextLevel
+          ? `Lv.${nextLevel.chapter}.${nextLevel.levelNumber} ${nextLevel.name}`
+          : null,
+      finalLevel,
+    });
+  };
+
+  const handleCloseRunModal = () => {
+    setRunModal((previous) => (previous ? { ...previous, open: false } : null));
+  };
+
+  const handleBackToMapFromModal = () => {
+    setRunModal(null);
+    setScreen('map');
+  };
+
+  const handleQuickNextLevel = () => {
+    if (!runModal?.nextLevelId) return;
+    setActiveLevelId(runModal.nextLevelId);
+    setRunModal(null);
+    setScreen('play');
+  };
+
+  const handleOpenGraduation = () => {
+    setRunModal(null);
+    setActiveLevelId(null);
+    setScreen('graduation');
   };
 
   const currentView = (() => {
@@ -163,6 +219,23 @@ function App() {
         <ChapterQuickReviewModal
           chapter={quickReviewChapter}
           onClose={() => setQuickReviewChapter(null)}
+        />
+      )}
+      {runModal && (
+        <LevelRunResultModal
+          open={runModal.open}
+          success={runModal.success}
+          levelName={runModal.levelName}
+          score={runModal.score}
+          reward={runModal.reward}
+          profitLossPercent={runModal.profitLossPercent}
+          transactionCount={runModal.transactionCount}
+          nextLevelName={runModal.nextLevelName}
+          isFinalLevel={runModal.finalLevel}
+          onClose={handleCloseRunModal}
+          onBackToMap={handleBackToMapFromModal}
+          onQuickNext={runModal.nextLevelId ? handleQuickNextLevel : undefined}
+          onOpenGraduation={runModal.finalLevel ? handleOpenGraduation : undefined}
         />
       )}
     </>

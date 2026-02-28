@@ -3,3 +3,4 @@ export { default as LevelMapPage } from './LevelMapPage';
 export { default as GraduationPage } from './GraduationPage';
 export { default as ChapterUnlockCelebration } from './ChapterUnlockCelebration';
 export { default as ChapterQuickReviewModal } from './ChapterQuickReviewModal';
+export { default as LevelRunResultModal } from './LevelRunResultModal';
