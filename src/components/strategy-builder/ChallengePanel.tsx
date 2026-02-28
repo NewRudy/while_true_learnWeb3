@@ -12,6 +12,7 @@ import {
   getNextStreakMilestone,
   type RewardBreakdown,
 } from '@/systems/motivation-system';
+import { buildStarterStrategy } from '@/content/level-starter-strategy';
 import { useStrategyBuilderStore } from './StrategyBuilderStore';
 import type {
   LevelDefinition,
@@ -204,6 +205,8 @@ export default function ChallengePanel({
   externalRunSignal = 0,
 }: ChallengePanelProps) {
   const exportStrategy = useStrategyBuilderStore((state) => state.exportStrategy);
+  const importStrategy = useStrategyBuilderStore((state) => state.importStrategy);
+  const setStrategyName = useStrategyBuilderStore((state) => state.setStrategyName);
   const nodes = useStrategyBuilderStore((state) => state.nodes);
   const setPlayerLevel = useStrategyBuilderStore((state) => state.setPlayerLevel);
   const setAllowedModuleTypes = useStrategyBuilderStore((state) => state.setAllowedModuleTypes);
@@ -301,6 +304,23 @@ export default function ChallengePanel({
     simulationEngine.loadStrategy(strategy);
     simulationEngine.setSpeed(10);
     simulationEngine.start(selectedLevel.initialFunds);
+  };
+
+  const handleBuildStarterStrategy = (autoRun: boolean) => {
+    if (!selectedLevel) {
+      setRunError('当前关卡不可用，请返回地图重新选择。');
+      return;
+    }
+
+    const starter = buildStarterStrategy(selectedLevel);
+    importStrategy(starter);
+    setStrategyName(starter.name);
+    setRunError(null);
+
+    if (autoRun) {
+      // Zustand 同步更新后立即可导出，直接触发运行。
+      handleRunChallenge();
+    }
   };
 
   useEffect(() => {
@@ -485,6 +505,30 @@ export default function ChallengePanel({
         >
           {isRunning ? '运行中...' : '开始运行'}
         </button>
+
+        <button
+          onClick={() => handleBuildStarterStrategy(true)}
+          disabled={isRunning || !selectedLevel}
+          className={`mt-2 w-full rounded py-2 text-xs font-semibold transition-colors ${
+            isRunning || !selectedLevel
+              ? 'cursor-not-allowed bg-gray-700 text-gray-400'
+              : 'bg-cyan-400/85 text-slate-900 hover:bg-cyan-300'
+          }`}
+        >
+          一键搭建并运行（新手）
+        </button>
+
+        <button
+          onClick={() => handleBuildStarterStrategy(false)}
+          disabled={isRunning || !selectedLevel}
+          className={`mt-2 w-full rounded border py-2 text-xs font-semibold transition-colors ${
+            isRunning || !selectedLevel
+              ? 'cursor-not-allowed border-gray-700 text-gray-500'
+              : 'border-white/20 bg-black/20 text-gray-100 hover:bg-black/30'
+          }`}
+        >
+          仅搭建模板
+        </button>
       </div>
 
       <div className="flex-1 space-y-4 overflow-y-auto p-4">
@@ -547,6 +591,21 @@ export default function ChallengePanel({
                 </p>
                 <p className="rounded border border-cyan-200/25 bg-black/20 px-2 py-1.5 text-xs text-cyan-50">
                   3. 点击“开始运行”，根据结果面板逐条修正未完成目标。
+                </p>
+                <p className="rounded border border-cyan-200/25 bg-black/20 px-2 py-1.5 text-xs text-cyan-50">
+                  新手可直接点击“ 一键搭建并运行 ”，先过关再回看模块参数。
+                </p>
+              </div>
+            </section>
+
+            <section className="rounded-lg border border-white/10 bg-gray-800/70 p-3">
+              <h4 className="text-sm font-medium text-white">连接规则（简化）</h4>
+              <div className="mt-2 space-y-1.5">
+                <p className="rounded border border-amber-300/25 bg-amber-400/10 px-2 py-1.5 text-xs text-amber-50">
+                  新手先只连橙色“触发信号”端口：上一步输出 -&gt; 下一步 signal_in。
+                </p>
+                <p className="rounded border border-emerald-300/25 bg-emerald-400/10 px-2 py-1.5 text-xs text-emerald-50">
+                  绿色是资金流，蓝色是数据流。前期可先忽略，先跑通策略链路。
                 </p>
               </div>
             </section>
