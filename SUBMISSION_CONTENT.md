@@ -17,7 +17,7 @@
 
 ## 3) 前端演示地址（必填）
 
-`待填写：https://<用户名>.github.io/<仓库名>/`
+`https://newrudy.github.io/while_true_learnWeb3/`
 
 > 说明：仓库主页 URL（`github.com/...`）通常不算前端演示地址，建议使用 GitHub Pages 的可直接访问页面链接。
 
@@ -25,7 +25,7 @@
 
 ## 4) GitHub 仓库（必填）
 
-`待填写：https://github.com/<your-org-or-name>/<repo>`
+`https://github.com/NewRudy/while_true_learnWeb3`
 
 ---
 

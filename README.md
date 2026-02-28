@@ -57,8 +57,8 @@ npm run test:run
 
 ## 演示与仓库
 
-- 前端演示地址：`待填写（推荐 GitHub Pages： https://<用户名>.github.io/<仓库名>/ ）`
-- GitHub 仓库：`待填写（公开仓库链接）`
+- 前端演示地址：`https://newrudy.github.io/while_true_learnWeb3/`
+- GitHub 仓库：`https://github.com/NewRudy/while_true_learnWeb3`
 
 ## 演示账号（如需）
 
